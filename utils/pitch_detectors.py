@@ -101,3 +101,24 @@ def yin_difference_cumsum(signal):
 def yin_difference_cumsum_to_hz(yin_diff, fs):
     _, minima = peak_rate(-yin_diff)
     return fs/(minima[1])
+
+### Apply pitch methods to full signal
+def pitch_detection(signal, fs, window_size, method='ac'):
+    ## Only supports autocorrelation for now
+    pitch = []
+    full_history = np.zeros_like(signal)
+    for i in range(0, len(signal), window_size):
+        if i+window_size > len(signal):
+            window = signal[i:]
+        else:
+            window = signal[i:i+window_size]
+        if method == 'ac':
+            ac_s = auto_correlation(window)
+            hz = ac_s_to_hz(ac_s, fs)
+            full_history[i:i+window_size] = ac_s
+        if method == 'yin':
+            yin_diff = yin_difference(window)
+            hz = yin_difference_cumsum_to_hz(yin_diff, fs)
+            full_history[i:i+window_size] = yin_diff
+        pitch.append(hz)
+    return np.array(pitch), full_history
