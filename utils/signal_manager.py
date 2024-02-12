@@ -22,9 +22,9 @@ def compute_cepstrum(signal, fs):
 def noise_signal(signal,sigma=0.1):
     return signal + np.random.normal(0, sigma, len(signal))
 
-def visualize_signal(signal, fs, zrc_arr=None, pr_arr=None, zrc_slope_arr=None, pr_slope_arr=None, ac_s=None, yin_diff=None, cepstrum=None, window_size=-1, window_start=0):
+def visualize_signal(signal, fs, zrc_arr=None, pr_arr=None, zrc_slope_arr=None, pr_slope_arr=None, ac_s=None, yin_diff=None, cepstrum=None, window_size=-1, window_start=0, yin_pitch=None):
     time = np.arange(0, len(signal)/fs, 1/fs)
-    if zrc_arr is None and pr_arr is None and zrc_slope_arr is None and pr_slope_arr is None and ac_s is None and yin_diff is None and cepstrum is None:
+    if zrc_arr is None and pr_arr is None and zrc_slope_arr is None and pr_slope_arr is None and ac_s is None and yin_diff is None and cepstrum is None and yin_pitch is None:
         signal_gradient = np.gradient(signal)
         if window_size == -1:
             plt.figure(figsize=(10,3))
@@ -155,3 +155,35 @@ def visualize_signal(signal, fs, zrc_arr=None, pr_arr=None, zrc_slope_arr=None, 
         plt.ylabel('Amplitude')
         plt.title('Cepstrum')
         plt.show()
+    if yin_pitch is not None:
+        if window_size == -1:
+            plt.figure()
+            plt.subplot(1, 2, 1)
+            plt.plot(time, signal, label='Signal')
+            plt.xlabel('Time (s)')
+            plt.ylabel('Amplitude')
+            plt.title('Signal')
+            plt.legend(loc="upper right")
+            plt.subplot(1, 2, 2)
+            plt.plot(time[np.mod(len(time),len(yin_pitch))::int(len(time)/len(yin_pitch))], yin_pitch, label='YIN pitch')
+            plt.xlabel('Time (s)')
+            plt.ylabel('Frequency (Hz)')
+            plt.title('YIN pitch')
+            plt.legend(loc="upper right")
+            plt.show()
+        else:
+            plt.figure()
+            plt.subplot(1, 2, 1)
+            plt.plot(time[window_start:window_start+window_size], signal[window_start:window_start+window_size], label='Signal')
+            plt.xlabel('Time (s)')
+            plt.ylabel('Amplitude')
+            plt.title('Signal')
+            plt.legend(loc="upper right")
+            plt.subplot(1, 2, 2)
+            plt.plot(time[::int(len(time)/len(yin_pitch))][window_start:window_start+window_size], yin_pitch[window_start:window_start+window_size], label='YIN pitch')
+            plt.xlabel('Time (s)')
+            plt.ylabel('Frequency (Hz)')
+            plt.title('YIN pitch')
+            plt.legend(loc="upper right")
+            plt.show()
+            
