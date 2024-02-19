@@ -1,4 +1,5 @@
 import numpy as np
+from librosa import pyin
 
 ### Time-event based pitch detection
 # 1. Zero-crossing rate
